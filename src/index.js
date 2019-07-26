@@ -30,9 +30,10 @@ checkUpdate().then(() => {
     .usage('<file> [moreFilesAndPath...]')
     .arguments('<file> [moreFilesAndPath...]')
     .option('-v, --version', '查看当前版本')
+    .option('-H, --header <type>', '使用预置的几种特定header，多个用逗号隔开')
     .on('--help', uploadHelp)
-    .action(async (file, moreFilesAndPath) => {
-      await uploadCommand(file, moreFilesAndPath)
+    .action(async (file, moreFilesAndPath, command) => {
+      await uploadCommand(file, moreFilesAndPath, command)
     });
 
   registerConfig(commander);

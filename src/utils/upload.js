@@ -7,12 +7,12 @@
 import path from 'path'
 import mime from 'mime'
 import fs from 'fs-extra'
-import sdk from 'baidubce-sdk'
+import sdk from '@baiducloud/sdk'
 import log from './log'
 
 let client
 
-export async function upload ({ak, sk, endpoint, files, bucket, prefix} = {}) {
+export async function upload ({ak, sk, endpoint, files, bucket, prefix, options} = {}) {
   if (!client) {
     client = new sdk.BosClient({
       credentials: {ak, sk},
@@ -23,7 +23,7 @@ export async function upload ({ak, sk, endpoint, files, bucket, prefix} = {}) {
   // Single upload
   if (files.length === 1) {
     let objectName = getObjectName(files[0], prefix);
-    await uploadInner(files[0], bucket, objectName, endpoint)
+    await uploadInner(files[0], bucket, objectName, endpoint, options)
     return
   }
 
@@ -34,7 +34,7 @@ export async function upload ({ak, sk, endpoint, files, bucket, prefix} = {}) {
     if (files.length !== 0) {
       let file = files.pop()
       let objectName = getObjectName(file, prefix);
-      uploadInner(file, bucket, objectName, endpoint).then(execUploadTask, execUploadTask)
+      uploadInner(file, bucket, objectName, endpoint, options).then(execUploadTask, execUploadTask)
     }
   }
   // 启动任务
@@ -74,13 +74,28 @@ function getObjectName (file, prefix) {
   return objectName.replace(/\/+/g, '/')
 }
 
-async function uploadInner (file, bucket, objectName, endpoint) {
+function getHeader(defaultHeader = {}, headerConfig, option) {
+  let headerConfigs = headerConfig.split(',')
+  for (let i = 0; i < headerConfigs.length; i++) {
+    switch (headerConfigs[i]) {
+      case 'nocache':
+        defaultHeader['Cache-Control'] = 'max-age=0, nocache'
+        break
+      case 'download':
+        defaultHeader['Content-Disposition'] = `attachment; filename="${path.basename(option.objectName)}"`
+        break
+    }
+  }
+  return defaultHeader;
+}
+
+async function uploadInner (file, bucket, objectName, endpoint, options) {
   let data = fs.readFileSync(file)
 
   try {
-    await client.putObject(bucket, objectName, data, {
-      'Content-Type': mime.getType(objectName)
-    })
+    let defaultHeader = {'Content-Type': mime.getType(objectName) || 'application/octet-stream'}
+    let header = options.headerConfig ? getHeader(defaultHeader, options.headerConfig, {objectName}) : defaultHeader
+    await client.putObject(bucket, objectName, data, header)
   } catch (e) {
     log.error('文件上传失败：' + file)
     console.log(e)

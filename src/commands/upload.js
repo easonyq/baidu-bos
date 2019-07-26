@@ -26,7 +26,7 @@ export function uploadHelp () {
 // baidu-bos file1 file2 file3... path
 // baidu-bos minimatch path
 // 上传命令并不带有 command 参数，因此写法和 config 略有区别。
-export async function uploadCommand (file, moreFilesAndPath) {
+export async function uploadCommand (file, moreFilesAndPath, command) {
   if (!moreFilesAndPath || moreFilesAndPath.length === 0) {
     log.error('未知的上传 URL，请重试')
     return
@@ -67,7 +67,7 @@ export async function uploadCommand (file, moreFilesAndPath) {
   let bucket = uploadMatch[1]
   let prefix = (uploadMatch[2] || '').replace(/^\/+/, '')
 
-  await upload({ak, sk, endpoint, files, bucket, prefix})
+  await upload({ak, sk, endpoint, files, bucket, prefix, options: {headerConfig: command.header}})
   // var sdk = new bos.BaiduObjectStorage(ak, sk, endpoint, maxSize, autoUri);
   // return sdk.upload(bucket, file, target);
 }
