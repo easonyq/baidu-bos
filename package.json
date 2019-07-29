@@ -1,6 +1,6 @@
 {
   "name": "baidu-bos",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "简易的上传 BOS 的命令行工具，用法同 edp bos",
   "main": "./bin/baidu-bos.js",
   "scripts": {

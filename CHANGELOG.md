@@ -2,6 +2,10 @@
 
 =======
 
+## [1.0.6] - 2019-7-29
+
+- 添加上传的命令参数（nocache, download) 以支持更多功能 （感谢 contributor @SnailSword）
+
 ## [1.0.4] - 2019-7-17
 
 - CDN 上保留上传目录的文件结构 （感谢 contributor @SnailSword）

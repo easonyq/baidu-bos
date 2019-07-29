@@ -77,13 +77,15 @@ function getObjectName (file, prefix) {
 function getHeader(defaultHeader = {}, headerConfig, option) {
   let headerConfigs = headerConfig.split(',')
   for (let i = 0; i < headerConfigs.length; i++) {
-    switch (headerConfigs[i]) {
+    switch (headerConfigs[i].trim()) {
       case 'nocache':
         defaultHeader['Cache-Control'] = 'max-age=0, nocache'
         break
       case 'download':
         defaultHeader['Content-Disposition'] = `attachment; filename="${path.basename(option.objectName)}"`
         break
+      default:
+        log.warn('未知的命令参数：' + headerConfigs[i] + '，已经跳过')
     }
   }
   return defaultHeader;

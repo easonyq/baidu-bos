@@ -98,6 +98,23 @@ npm i baidu-bos -g
 baidu-bos INFO url:     http://bos.nj.bpc.baidu.com/<bucket>/a.js
 ```
 
+## 控制 Header
+
+使用 `-H` 或者 `--header` 可以控制响应头，目前支持的参数有：
+
+* `nocache` 为上传的所有文件添加响应头 `Cache-Control: 'max-age=0,nocache'`，提示浏览器不要缓存该文件。
+* `download` 为上传的所有文件添加响应头 `Content-Disposition': 'attachment; filename="[file-name]"'，直接访问时可让浏览器下载该文件。
+
+使用举例
+
+```bash
+baidu-bos dir/a.js bos://<bucket>/path -H nocache
+# 上传 dir/a.js 并设置响应头，忽略缓存
+
+baidu-bos . bos://<bucket>/path -H download,nocache
+# 上传当前目录下所有文件，并设置响应头，忽略缓存且使用下载处理
+```
+
 ## 配置相关
 
 在首次使用时，您可能需要配置 bos.ak, bos.sk 和 bos.endpoint。此外，您也可能会在使用过程中切换/修改某个配置项，可以使用 `baidu-bos config` 命令。
